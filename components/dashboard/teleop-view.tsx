@@ -11,6 +11,8 @@ import {
   Camera,
   Video,
   Signal,
+  Maximize,
+  Minimize,
 } from "lucide-react"
 import { useCallback, useEffect, useState, useRef } from "react"
 import { toast } from "sonner"
@@ -237,13 +239,32 @@ export function TeleOpView() {
               <h3 className="text-sm font-medium text-foreground/90">Quick Actions</h3>
             </div>
             <div className="relative px-4 pb-4 flex flex-col gap-3">
-              <Button className="w-full bg-emerald-500/10 text-primary border border-emerald-500/15 hover:bg-emerald-500/15 gap-2 rounded-xl backdrop-blur-sm" variant="outline">
+              <Button className="w-full bg-emerald-500/10 text-primary border border-emerald-500/15 hover:bg-emerald-500/15 gap-2 rounded-xl backdrop-blur-sm" variant="outline" onClick={() => toast("Command sent: Deploying soil sensor")}>
                 <FlaskConical className="w-4 h-4" />
                 Deploy Soil Sensor
               </Button>
-              <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90 gap-2 rounded-xl glow-green-sm">
+            </div>
+          </div>
+
+          {/* Robotic Arm */}
+          <div className="relative glass-card rounded-2xl overflow-hidden noise">
+            <div className="relative p-4 pb-3">
+              <h3 className="text-sm font-medium text-foreground/90">Robotic Arm (Camera)</h3>
+            </div>
+            <div className="relative px-4 pb-4 flex flex-col gap-3">
+              <div className="grid grid-cols-2 gap-3">
+                <Button className="w-full bg-emerald-500/10 text-primary border border-emerald-500/15 hover:bg-emerald-500/15 gap-2 rounded-xl backdrop-blur-sm" variant="outline" onClick={() => toast("Arm Status: Extending...")}>
+                  <Maximize className="w-4 h-4" />
+                  Extend
+                </Button>
+                <Button className="w-full bg-emerald-500/10 text-primary border border-emerald-500/15 hover:bg-emerald-500/15 gap-2 rounded-xl backdrop-blur-sm" variant="outline" onClick={() => toast("Arm Status: Retracting...")}>
+                  <Minimize className="w-4 h-4" />
+                  Retract
+                </Button>
+              </div>
+              <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90 gap-2 rounded-xl glow-green-sm" onClick={() => { toast("Camera: High-res photo captured"); setRoverStatus("Capturing Photo...") }}>
                 <Camera className="w-4 h-4" />
-                Capture AI Image
+                Capture Photo
               </Button>
             </div>
           </div>
