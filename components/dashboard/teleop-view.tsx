@@ -15,6 +15,10 @@ import {
   Minimize,
   Power,
   PowerOff,
+  Droplets,
+  ThermometerSun,
+  CloudRain,
+  Sprout,
 } from "lucide-react"
 import { useCallback, useEffect, useState, useRef } from "react"
 import { toast } from "sonner"
@@ -34,6 +38,34 @@ export function TeleOpView() {
   const [activeDirection, setActiveDirection] = useState<string | null>(null)
   const [roverStatus, setRoverStatus] = useState("Idle")
   const [isCameraOn, setIsCameraOn] = useState(true)
+
+  const [isSensorDeploying, setIsSensorDeploying] = useState(false)
+  const [sensorData, setSensorData] = useState<{
+    ph: string;
+    moisture: string;
+    weather: string;
+    temperature: string;
+    cropSuitability: string;
+  } | null>(null)
+
+  const handleDeploySensor = async () => {
+    setIsSensorDeploying(true)
+    setSensorData(null)
+    toast("Command sent: Deploying soil sensor...")
+    setRoverStatus("Deploying Sensor")
+    await new Promise(resolve => setTimeout(resolve, 3000))
+
+    setSensorData({
+      ph: "6.5",
+      moisture: "42%",
+      temperature: "24°C",
+      weather: "Partly Cloudy",
+      cropSuitability: "Optimal for Rice (Requires 6.0 - 7.0 pH)"
+    })
+    setIsSensorDeploying(false)
+    setRoverStatus("Idle")
+    toast.success("Sensor data collected successfully")
+  }
 
   const handleDirectionChange = useCallback((dir: string | null) => {
     setActiveDirection(dir)
@@ -303,16 +335,63 @@ export function TeleOpView() {
             </div>
           </div>
 
-          {/* Quick actions */}
+          {/* Quick actions & Sensor Data */}
           <div className="relative glass-card rounded-2xl overflow-hidden noise">
             <div className="relative p-4 pb-3">
-              <h3 className="text-sm font-medium text-foreground/90">Quick Actions</h3>
+              <h3 className="text-sm font-medium text-foreground/90">Soil & Environment Sensor</h3>
             </div>
             <div className="relative px-4 pb-4 flex flex-col gap-3">
-              <Button className="w-full bg-emerald-500/10 text-primary border border-emerald-500/15 hover:bg-emerald-500/15 gap-2 rounded-xl backdrop-blur-sm" variant="outline" onClick={() => toast("Command sent: Deploying soil sensor")}>
-                <FlaskConical className="w-4 h-4" />
-                Deploy Soil Sensor
+              <Button
+                disabled={isSensorDeploying}
+                className="w-full bg-emerald-500/10 text-primary border border-emerald-500/15 hover:bg-emerald-500/15 gap-2 rounded-xl backdrop-blur-sm"
+                variant="outline"
+                onClick={handleDeploySensor}
+              >
+                {isSensorDeploying ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                    Deploying Sensor...
+                  </>
+                ) : (
+                  <>
+                    <FlaskConical className="w-4 h-4" />
+                    Deploy Soil Sensor
+                  </>
+                )}
               </Button>
+
+              {sensorData && (
+                <div className="mt-2 space-y-3 animate-in fade-in slide-in-from-bottom-2 duration-500">
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="p-3 rounded-xl bg-blue-500/[0.06] border border-blue-500/10 backdrop-blur-sm flex flex-col items-center justify-center text-center">
+                      <Droplets className="w-4 h-4 text-blue-500 mb-1" />
+                      <p className="text-[10px] font-medium text-blue-500 uppercase tracking-wider">Moisture</p>
+                      <p className="text-lg font-bold text-foreground">{sensorData.moisture}</p>
+                    </div>
+                    <div className="p-3 rounded-xl bg-emerald-500/[0.06] border border-emerald-500/10 backdrop-blur-sm flex flex-col items-center justify-center text-center">
+                      <FlaskConical className="w-4 h-4 text-emerald-500 mb-1" />
+                      <p className="text-[10px] font-medium text-emerald-500 uppercase tracking-wider">pH Level</p>
+                      <p className="text-lg font-bold text-foreground">{sensorData.ph}</p>
+                    </div>
+                  </div>
+
+                  <div className="p-3 rounded-xl bg-amber-500/[0.06] border border-amber-500/10 backdrop-blur-sm flex items-center gap-3">
+                    <ThermometerSun className="w-8 h-8 text-amber-500 shrink-0" />
+                    <div>
+                      <p className="text-[10px] font-medium text-amber-500 uppercase tracking-wider">Environment</p>
+                      <p className="text-sm font-bold text-foreground">{sensorData.temperature} &middot; {sensorData.weather}</p>
+                    </div>
+                  </div>
+
+                  <div className="p-3 rounded-xl bg-primary/[0.06] border border-primary/10 backdrop-blur-sm flex items-start gap-3">
+                    <Sprout className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                    <div>
+                      <p className="text-[10px] font-medium text-primary uppercase tracking-wider">Suitability Analysis</p>
+                      <p className="text-sm font-medium text-foreground">{sensorData.cropSuitability}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
