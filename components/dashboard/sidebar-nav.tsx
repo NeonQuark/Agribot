@@ -16,17 +16,18 @@ import {
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import { useState } from "react"
+import { useLanguage } from "@/lib/language-context"
 
 export type ViewType = "teleop" | "patrol" | "crop-doctor" | "marketplace" | "community" | "diagnostics" | "settings"
 
-const navItems: { id: ViewType; label: string; icon: React.ElementType }[] = [
-  { id: "teleop", label: "Tele-Op", icon: Gamepad2 },
-  { id: "patrol", label: "Auto-Patrol", icon: Route },
-  { id: "crop-doctor", label: "Crop Doctor", icon: Microscope },
-  { id: "marketplace", label: "Agritech Hub", icon: Store },
-  { id: "community", label: "Community", icon: MessageCircle },
-  { id: "diagnostics", label: "Fleet Diagnostics", icon: Activity },
-  { id: "settings", label: "Settings", icon: Settings },
+const navItems: { id: ViewType; labelKey: string; icon: React.ElementType }[] = [
+  { id: "teleop", labelKey: "sidebar.teleop", icon: Gamepad2 },
+  { id: "patrol", labelKey: "sidebar.patrol", icon: Route },
+  { id: "crop-doctor", labelKey: "sidebar.cropDoctor", icon: Microscope },
+  { id: "marketplace", labelKey: "sidebar.agritechHub", icon: Store },
+  { id: "community", labelKey: "sidebar.community", icon: MessageCircle },
+  { id: "diagnostics", labelKey: "sidebar.diagnostics", icon: Activity },
+  { id: "settings", labelKey: "sidebar.settings", icon: Settings },
 ]
 
 interface SidebarNavProps {
@@ -35,6 +36,8 @@ interface SidebarNavProps {
 }
 
 function NavContent({ activeView, onViewChange, onItemClick }: SidebarNavProps & { onItemClick?: () => void }) {
+  const { t } = useLanguage()
+
   return (
     <div className="flex flex-col h-full">
       {/* Logo */}
@@ -44,13 +47,13 @@ function NavContent({ activeView, onViewChange, onItemClick }: SidebarNavProps &
         </div>
         <div>
           <h1 className="text-sm font-semibold text-foreground tracking-tight">AgriRover</h1>
-          <p className="text-[11px] text-muted-foreground">Command Center</p>
+          <p className="text-[11px] text-muted-foreground">{t("sidebar.commandCenter")}</p>
         </div>
       </div>
 
       {/* Nav links */}
       <nav className="flex-1 px-3 py-4">
-        <p className="px-3 mb-3 text-[10px] font-semibold text-muted-foreground/60 uppercase tracking-widest">Navigation</p>
+        <p className="px-3 mb-3 text-[10px] font-semibold text-muted-foreground/60 uppercase tracking-widest">{t("sidebar.navigation")}</p>
         <ul className="flex flex-col gap-1" role="tablist" aria-label="Dashboard navigation">
           {navItems.map((item) => {
             const isActive = activeView === item.id
@@ -74,7 +77,7 @@ function NavContent({ activeView, onViewChange, onItemClick }: SidebarNavProps &
                     <div className="absolute inset-0 rounded-xl bg-emerald-500/10 border border-emerald-500/15" />
                   )}
                   <item.icon className="relative w-4.5 h-4.5 shrink-0" />
-                  <span className="relative">{item.label}</span>
+                  <span className="relative">{t(item.labelKey)}</span>
                   {isActive && (
                     <span className="relative ml-auto w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_6px_rgba(16,185,129,0.6)]" />
                   )}
@@ -94,7 +97,7 @@ function NavContent({ activeView, onViewChange, onItemClick }: SidebarNavProps &
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
               <span className="relative inline-flex rounded-full h-2 w-2 bg-primary shadow-[0_0_6px_rgba(16,185,129,0.5)]" />
             </span>
-            <span className="text-xs font-medium text-foreground">Rover Online</span>
+            <span className="text-xs font-medium text-foreground">{t("sidebar.roverOnline")}</span>
           </div>
           <p className="relative text-[11px] text-muted-foreground">AGRI-RV-001 &middot; Field 7</p>
         </div>

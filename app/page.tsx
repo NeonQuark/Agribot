@@ -9,6 +9,7 @@ import { MarketplaceView } from "@/components/dashboard/marketplace-view"
 import { CommunityView } from "@/components/dashboard/community-view"
 import { DiagnosticsView } from "@/components/dashboard/diagnostics-view"
 import { SettingsView } from "@/components/dashboard/settings-view"
+import { LanguageProvider } from "@/lib/language-context"
 
 const views: Record<ViewType, React.ComponentType> = {
   teleop: TeleOpView,
@@ -25,13 +26,15 @@ export default function DashboardPage() {
   const ActiveComponent = views[activeView]
 
   return (
-    <div className="flex min-h-screen mesh-bg">
-      <SidebarNav activeView={activeView} onViewChange={setActiveView} />
-      <main className="flex-1 min-w-0">
-        <div className="p-4 md:p-6 lg:p-8 max-w-[1400px]">
-          <ActiveComponent />
-        </div>
-      </main>
-    </div>
+    <LanguageProvider>
+      <div className="flex min-h-screen mesh-bg">
+        <SidebarNav activeView={activeView} onViewChange={setActiveView} />
+        <main className="flex-1 min-w-0">
+          <div className="p-4 md:p-6 lg:p-8 max-w-[1400px]">
+            <ActiveComponent />
+          </div>
+        </main>
+      </div>
+    </LanguageProvider>
   )
 }
