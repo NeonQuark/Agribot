@@ -9,6 +9,8 @@ import {
   Clock,
   Trash2,
 } from "lucide-react"
+import { useState } from "react"
+import { toast } from "sonner"
 
 const waypoints = [
   { id: 1, name: "Waypoint Alpha", lat: "28.6139\u00b0N", lng: "77.2090\u00b0E", type: "Start" },
@@ -17,6 +19,18 @@ const waypoints = [
 ]
 
 export function PatrolView() {
+  const [isDeploying, setIsDeploying] = useState(false)
+  const [isPatrolling, setIsPatrolling] = useState(false)
+
+  const handleStartPatrol = async () => {
+    setIsDeploying(true)
+    toast("Initializing autonomous sequence... Deploying rover.")
+    await new Promise(resolve => setTimeout(resolve, 3000))
+    setIsDeploying(false)
+    setIsPatrolling(true)
+    toast.success("Rover deployed. Live tracking active.")
+  }
+
   return (
     <div className="flex flex-col gap-6">
       {/* Header */}
@@ -40,6 +54,13 @@ export function PatrolView() {
           </div>
           <div className="relative px-4 pb-4">
             <div className="relative aspect-[16/10] bg-black/40 rounded-xl overflow-hidden border border-white/[0.04]">
+              {/* Realistic Map Background */}
+              <img
+                src="https://images.unsplash.com/photo-1542385002-282e7af12662?auto=format&fit=crop&q=80&w=1600"
+                alt="Satellite Farm Map"
+                className="absolute inset-0 w-full h-full object-cover opacity-50 mix-blend-luminosity"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-background/20" />
               {/* Grid */}
               <div className="absolute inset-0 opacity-[0.04]" style={{
                 backgroundImage: `linear-gradient(rgba(16,185,129,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(16,185,129,0.5) 1px, transparent 1px)`,
@@ -57,10 +78,23 @@ export function PatrolView() {
                 <text x="100" y="202" fill="rgba(148,163,184,0.5)" fontSize="10" textAnchor="middle" fontFamily="monospace">Alpha</text>
                 <text x="200" y="86" fill="rgba(148,163,184,0.5)" fontSize="10" textAnchor="middle" fontFamily="monospace">Bravo</text>
                 <text x="300" y="142" fill="rgba(148,163,184,0.5)" fontSize="10" textAnchor="middle" fontFamily="monospace">Charlie</text>
+
+                {/* Live tracking marker */}
+                {isPatrolling && (
+                  <g>
+                    <circle r="6" fill="#0EA5E9" className="animate-pulse" />
+                    <circle r="14" fill="none" stroke="#0EA5E9" strokeWidth="2" className="animate-ping" />
+                    <animateMotion dur="15s" repeatCount="indefinite" path="M100,180 Q200,60 300,120" />
+                  </g>
+                )}
               </svg>
-              <div className="absolute top-3 left-3 text-xs font-mono text-primary/40">
-                <p>PATROL MODE</p>
-                <p>ETA: 12 min</p>
+              <div className="absolute top-3 left-3 flex flex-col items-start font-mono">
+                {isPatrolling ? (
+                  <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30 animate-pulse mb-1 rounded-sm backdrop-blur-md">LIVE TRACKING</Badge>
+                ) : (
+                  <Badge className="bg-black/50 text-primary/70 border-primary/20 mb-1 rounded-sm backdrop-blur-md">PATROL MAP</Badge>
+                )}
+                <Badge className="bg-black/50 text-muted-foreground border-white/10 rounded-sm backdrop-blur-md text-[10px]">ETA: {isPatrolling ? "11 min" : "12 min"}</Badge>
               </div>
               <div className="absolute top-3 right-3 text-xs font-mono text-muted-foreground/30">
                 <p>ZOOM: 15x</p>
@@ -82,11 +116,10 @@ export function PatrolView() {
                   key={wp.id}
                   className="flex items-start gap-3 p-3 rounded-xl bg-white/[0.03] border border-white/[0.06] group hover:border-white/[0.1] transition-colors"
                 >
-                  <div className={`flex items-center justify-center w-8 h-8 rounded-lg shrink-0 ${
-                    wp.type === "Start" ? "bg-emerald-500/10 text-primary" :
-                    wp.type === "End" ? "bg-red-500/10 text-destructive" :
-                    "bg-blue-500/10 text-[#3B82F6]"
-                  }`}>
+                  <div className={`flex items-center justify-center w-8 h-8 rounded-lg shrink-0 ${wp.type === "Start" ? "bg-emerald-500/10 text-primary" :
+                      wp.type === "End" ? "bg-red-500/10 text-destructive" :
+                        "bg-blue-500/10 text-[#3B82F6]"
+                    }`}>
                     <MapPin className="w-4 h-4" />
                   </div>
                   <div className="flex-1 min-w-0">
@@ -120,9 +153,30 @@ export function PatrolView() {
                 </span>
                 <span className="text-foreground font-medium">0.8 km</span>
               </div>
-              <Button className="w-full mt-2 bg-primary text-primary-foreground hover:bg-primary/90 gap-2 h-12 text-base font-semibold rounded-xl glow-green">
-                <Play className="w-5 h-5" />
-                Start Autonomous Patrol
+              <Button
+                onClick={handleStartPatrol}
+                disabled={isDeploying || isPatrolling}
+                className={`w-full mt-2 gap-2 h-12 text-base font-semibold rounded-xl transition-all ${isPatrolling
+                    ? "bg-blue-500/10 text-blue-500 border border-blue-500/30 backdrop-blur-sm"
+                    : "bg-primary text-primary-foreground hover:bg-primary/90 glow-green"
+                  }`}
+              >
+                {isDeploying ? (
+                  <>
+                    <div className="w-5 h-5 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" />
+                    Deploying Rover...
+                  </>
+                ) : isPatrolling ? (
+                  <>
+                    <Navigation className="w-5 h-5 animate-pulse" />
+                    Patrol in Progress
+                  </>
+                ) : (
+                  <>
+                    <Play className="w-5 h-5" />
+                    Start Autonomous Patrol
+                  </>
+                )}
               </Button>
             </div>
           </div>
