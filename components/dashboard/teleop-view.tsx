@@ -100,8 +100,8 @@ export function TeleOpView() {
                   toast(`Camera turned ${!isCameraOn ? "ON" : "OFF"}`)
                 }}
                 className={`h-7 px-2.5 text-xs gap-1.5 border hover:bg-white/[0.04] transition-all backdrop-blur-sm ${isCameraOn
-                    ? "bg-red-500/10 text-destructive border-red-500/20 hover:text-red-400"
-                    : "bg-emerald-500/10 text-primary border-emerald-500/20 hover:text-emerald-400"
+                  ? "bg-red-500/10 text-destructive border-red-500/20 hover:text-red-400"
+                  : "bg-emerald-500/10 text-primary border-emerald-500/20 hover:text-emerald-400"
                   }`}
               >
                 {isCameraOn ? <PowerOff className="w-3 h-3" /> : <Power className="w-3 h-3" />}
@@ -183,81 +183,122 @@ export function TeleOpView() {
               <p className="text-xs text-muted-foreground mt-0.5">Use WASD or arrow keys</p>
             </div>
             <div className="relative px-4 pb-4">
-              <div className="grid grid-cols-3 gap-2 max-w-[180px] mx-auto">
-                <div />
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className={`h-14 w-full rounded-xl border-white/[0.08] bg-white/[0.03] transition-all ${activeDirection === "forward"
-                    ? "bg-primary/20 text-primary border-primary/30 glow-green-sm"
-                    : "text-foreground/80 hover:bg-white/[0.06]"
-                    }`}
-                  onMouseDown={() => handleDirectionChange("forward")}
-                  onMouseUp={() => handleDirectionChange(null)}
-                  onMouseLeave={() => activeDirection === "forward" && handleDirectionChange(null)}
-                  onTouchStart={(e: React.TouchEvent) => { e.preventDefault(); handleDirectionChange("forward"); }}
-                  onTouchEnd={(e: React.TouchEvent) => { e.preventDefault(); handleDirectionChange(null); }}
-                  aria-label="Forward"
-                >
-                  <ArrowUp className="w-5 h-5" />
-                </Button>
-                <div />
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className={`h-14 w-full rounded-xl border-white/[0.08] bg-white/[0.03] transition-all ${activeDirection === "left"
-                    ? "bg-primary/20 text-primary border-primary/30 glow-green-sm"
-                    : "text-foreground/80 hover:bg-white/[0.06]"
-                    }`}
-                  onMouseDown={() => handleDirectionChange("left")}
-                  onMouseUp={() => handleDirectionChange(null)}
-                  onMouseLeave={() => activeDirection === "left" && handleDirectionChange(null)}
-                  onTouchStart={(e: React.TouchEvent) => { e.preventDefault(); handleDirectionChange("left"); }}
-                  onTouchEnd={(e: React.TouchEvent) => { e.preventDefault(); handleDirectionChange(null); }}
-                  aria-label="Left"
-                >
-                  <ArrowLeft className="w-5 h-5" />
-                </Button>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className={`h-14 w-full rounded-xl border-white/[0.08] bg-white/[0.03] transition-all ${activeDirection === "backward"
-                    ? "bg-primary/20 text-primary border-primary/30 glow-green-sm"
-                    : "text-foreground/80 hover:bg-white/[0.06]"
-                    }`}
-                  onMouseDown={() => handleDirectionChange("backward")}
-                  onMouseUp={() => handleDirectionChange(null)}
-                  onMouseLeave={() => activeDirection === "backward" && handleDirectionChange(null)}
-                  onTouchStart={(e: React.TouchEvent) => { e.preventDefault(); handleDirectionChange("backward"); }}
-                  onTouchEnd={(e: React.TouchEvent) => { e.preventDefault(); handleDirectionChange(null); }}
-                  aria-label="Backward"
-                >
-                  <ArrowDown className="w-5 h-5" />
-                </Button>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className={`h-14 w-full rounded-xl border-white/[0.08] bg-white/[0.03] transition-all ${activeDirection === "right"
-                    ? "bg-primary/20 text-primary border-primary/30 glow-green-sm"
-                    : "text-foreground/80 hover:bg-white/[0.06]"
-                    }`}
-                  onMouseDown={() => handleDirectionChange("right")}
-                  onMouseUp={() => handleDirectionChange(null)}
-                  onMouseLeave={() => activeDirection === "right" && handleDirectionChange(null)}
-                  onTouchStart={(e: React.TouchEvent) => { e.preventDefault(); handleDirectionChange("right"); }}
-                  onTouchEnd={(e: React.TouchEvent) => { e.preventDefault(); handleDirectionChange(null); }}
-                  aria-label="Right"
-                >
-                  <ArrowRight className="w-5 h-5" />
-                </Button>
+              <div className="flex items-center gap-4 justify-center">
+                {/* Left Arm Control */}
+                <div className="flex flex-col gap-2 shrink-0">
+                  <p className="text-[10px] font-mono text-muted-foreground/60 text-center uppercase tracking-wider">Arm</p>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="h-14 w-12 rounded-xl border-white/[0.08] bg-white/[0.03] text-foreground/80 hover:bg-white/[0.06] hover:text-primary hover:border-emerald-500/30 transition-all flex flex-col gap-1"
+                    onClick={() => toast("Arm Status: Extending...")}
+                    aria-label="Extend Arm"
+                  >
+                    <Maximize className="w-4 h-4" />
+                  </Button>
+                </div>
+
+                {/* D-Pad Container */}
+                <div className="flex-1 max-w-[180px]">
+                  <div className="grid grid-cols-3 gap-2 mx-auto">
+                    <div />
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      className={`h-14 w-full rounded-xl border-white/[0.08] bg-white/[0.03] transition-all ${activeDirection === "forward"
+                        ? "bg-primary/20 text-primary border-primary/30 glow-green-sm"
+                        : "text-foreground/80 hover:bg-white/[0.06]"
+                        }`}
+                      onMouseDown={() => handleDirectionChange("forward")}
+                      onMouseUp={() => handleDirectionChange(null)}
+                      onMouseLeave={() => activeDirection === "forward" && handleDirectionChange(null)}
+                      onTouchStart={(e: React.TouchEvent) => { e.preventDefault(); handleDirectionChange("forward"); }}
+                      onTouchEnd={(e: React.TouchEvent) => { e.preventDefault(); handleDirectionChange(null); }}
+                      aria-label="Forward"
+                    >
+                      <ArrowUp className="w-5 h-5" />
+                    </Button>
+                    <div />
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      className={`h-14 w-full rounded-xl border-white/[0.08] bg-white/[0.03] transition-all ${activeDirection === "left"
+                        ? "bg-primary/20 text-primary border-primary/30 glow-green-sm"
+                        : "text-foreground/80 hover:bg-white/[0.06]"
+                        }`}
+                      onMouseDown={() => handleDirectionChange("left")}
+                      onMouseUp={() => handleDirectionChange(null)}
+                      onMouseLeave={() => activeDirection === "left" && handleDirectionChange(null)}
+                      onTouchStart={(e: React.TouchEvent) => { e.preventDefault(); handleDirectionChange("left"); }}
+                      onTouchEnd={(e: React.TouchEvent) => { e.preventDefault(); handleDirectionChange(null); }}
+                      aria-label="Left"
+                    >
+                      <ArrowLeft className="w-5 h-5" />
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      className={`h-14 w-full rounded-xl border-white/[0.08] bg-white/[0.03] transition-all ${activeDirection === "backward"
+                        ? "bg-primary/20 text-primary border-primary/30 glow-green-sm"
+                        : "text-foreground/80 hover:bg-white/[0.06]"
+                        }`}
+                      onMouseDown={() => handleDirectionChange("backward")}
+                      onMouseUp={() => handleDirectionChange(null)}
+                      onMouseLeave={() => activeDirection === "backward" && handleDirectionChange(null)}
+                      onTouchStart={(e: React.TouchEvent) => { e.preventDefault(); handleDirectionChange("backward"); }}
+                      onTouchEnd={(e: React.TouchEvent) => { e.preventDefault(); handleDirectionChange(null); }}
+                      aria-label="Backward"
+                    >
+                      <ArrowDown className="w-5 h-5" />
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      className={`h-14 w-full rounded-xl border-white/[0.08] bg-white/[0.03] transition-all ${activeDirection === "right"
+                        ? "bg-primary/20 text-primary border-primary/30 glow-green-sm"
+                        : "text-foreground/80 hover:bg-white/[0.06]"
+                        }`}
+                      onMouseDown={() => handleDirectionChange("right")}
+                      onMouseUp={() => handleDirectionChange(null)}
+                      onMouseLeave={() => activeDirection === "right" && handleDirectionChange(null)}
+                      onTouchStart={(e: React.TouchEvent) => { e.preventDefault(); handleDirectionChange("right"); }}
+                      onTouchEnd={(e: React.TouchEvent) => { e.preventDefault(); handleDirectionChange(null); }}
+                      aria-label="Right"
+                    >
+                      <ArrowRight className="w-5 h-5" />
+                    </Button>
+                  </div>
+                  <div className="grid grid-cols-3 gap-2 mx-auto mt-2">
+                    <div />
+                    <p className="text-center text-[10px] font-mono text-muted-foreground/50">W / &uarr;</p>
+                    <div />
+                    <p className="text-center text-[10px] font-mono text-muted-foreground/50">A / &larr;</p>
+                    <p className="text-center text-[10px] font-mono text-muted-foreground/50">S / &darr;</p>
+                    <p className="text-center text-[10px] font-mono text-muted-foreground/50">D / &rarr;</p>
+                  </div>
+                </div>
+
+                {/* Right Arm Control */}
+                <div className="flex flex-col gap-2 shrink-0">
+                  <p className="text-[10px] font-mono text-muted-foreground/60 text-center uppercase text-transparent select-none">Arm</p>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="h-14 w-12 rounded-xl border-white/[0.08] bg-white/[0.03] text-foreground/80 hover:bg-white/[0.06] hover:text-amber-400 hover:border-amber-500/30 transition-all flex flex-col gap-1"
+                    onClick={() => toast("Arm Status: Retracting...")}
+                    aria-label="Retract Arm"
+                  >
+                    <Minimize className="w-4 h-4" />
+                  </Button>
+                </div>
               </div>
-              <div className="grid grid-cols-3 gap-2 max-w-[180px] mx-auto mt-1">
-                <div />
-                <p className="text-center text-[10px] font-mono text-muted-foreground/50">W / &uarr;</p>
-                <div />
-                <p className="text-center text-[10px] font-mono text-muted-foreground/50">A / &larr;</p>
-                <p className="text-center text-[10px] font-mono text-muted-foreground/50">S / &darr;</p>
-                <p className="text-center text-[10px] font-mono text-muted-foreground/50">D / &rarr;</p>
+
+              {/* Action Button Below Controls */}
+              <div className="mt-6 max-w-[280px] mx-auto">
+                <Button className="w-full bg-primary/10 text-primary hover:bg-primary/20 hover:text-primary-foreground border-primary/30 hover:border-primary/50 gap-2 h-12 rounded-xl transition-all" onClick={() => { toast("Camera: High-res photo captured"); setRoverStatus("Capturing Photo...") }}>
+                  <Camera className="w-5 h-5" />
+                  Capture Photo
+                </Button>
               </div>
             </div>
           </div>
@@ -271,29 +312,6 @@ export function TeleOpView() {
               <Button className="w-full bg-emerald-500/10 text-primary border border-emerald-500/15 hover:bg-emerald-500/15 gap-2 rounded-xl backdrop-blur-sm" variant="outline" onClick={() => toast("Command sent: Deploying soil sensor")}>
                 <FlaskConical className="w-4 h-4" />
                 Deploy Soil Sensor
-              </Button>
-            </div>
-          </div>
-
-          {/* Robotic Arm */}
-          <div className="relative glass-card rounded-2xl overflow-hidden noise">
-            <div className="relative p-4 pb-3">
-              <h3 className="text-sm font-medium text-foreground/90">Robotic Arm (Camera)</h3>
-            </div>
-            <div className="relative px-4 pb-4 flex flex-col gap-3">
-              <div className="grid grid-cols-2 gap-3">
-                <Button className="w-full bg-emerald-500/10 text-primary border border-emerald-500/15 hover:bg-emerald-500/15 gap-2 rounded-xl backdrop-blur-sm" variant="outline" onClick={() => toast("Arm Status: Extending...")}>
-                  <Maximize className="w-4 h-4" />
-                  Extend
-                </Button>
-                <Button className="w-full bg-emerald-500/10 text-primary border border-emerald-500/15 hover:bg-emerald-500/15 gap-2 rounded-xl backdrop-blur-sm" variant="outline" onClick={() => toast("Arm Status: Retracting...")}>
-                  <Minimize className="w-4 h-4" />
-                  Retract
-                </Button>
-              </div>
-              <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90 gap-2 rounded-xl glow-green-sm" onClick={() => { toast("Camera: High-res photo captured"); setRoverStatus("Capturing Photo...") }}>
-                <Camera className="w-4 h-4" />
-                Capture Photo
               </Button>
             </div>
           </div>
