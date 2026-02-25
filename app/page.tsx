@@ -8,6 +8,7 @@ import { CropDoctorView } from "@/components/dashboard/crop-doctor-view"
 import { MarketplaceView } from "@/components/dashboard/marketplace-view"
 import { CommunityView } from "@/components/dashboard/community-view"
 import { DiagnosticsView } from "@/components/dashboard/diagnostics-view"
+import { SettingsView } from "@/components/dashboard/settings-view"
 
 const views: Record<ViewType, React.ComponentType> = {
   teleop: TeleOpView,
@@ -16,6 +17,7 @@ const views: Record<ViewType, React.ComponentType> = {
   marketplace: MarketplaceView,
   community: CommunityView,
   diagnostics: DiagnosticsView,
+  settings: SettingsView,
 }
 
 export default function DashboardPage() {

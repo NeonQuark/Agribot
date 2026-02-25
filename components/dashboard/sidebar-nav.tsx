@@ -11,12 +11,13 @@ import {
   Leaf,
   X,
   MessageCircle,
+  Settings,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import { useState } from "react"
 
-export type ViewType = "teleop" | "patrol" | "crop-doctor" | "marketplace" | "community" | "diagnostics"
+export type ViewType = "teleop" | "patrol" | "crop-doctor" | "marketplace" | "community" | "diagnostics" | "settings"
 
 const navItems: { id: ViewType; label: string; icon: React.ElementType }[] = [
   { id: "teleop", label: "Tele-Op", icon: Gamepad2 },
@@ -25,6 +26,7 @@ const navItems: { id: ViewType; label: string; icon: React.ElementType }[] = [
   { id: "marketplace", label: "Agritech Hub", icon: Store },
   { id: "community", label: "Community", icon: MessageCircle },
   { id: "diagnostics", label: "Fleet Diagnostics", icon: Activity },
+  { id: "settings", label: "Settings", icon: Settings },
 ]
 
 interface SidebarNavProps {
