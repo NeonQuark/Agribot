@@ -119,96 +119,6 @@ const groups: ChatGroup[] = [
   },
 ]
 
-const messagesData: Record<string, Message[]> = {
-  "organic-wheat": [
-    {
-      id: "1",
-      sender: "Raj Patel",
-      initials: "RP",
-      color: "bg-amber-500/15 text-amber-300",
-      content: "Good morning everyone! The winter wheat is looking excellent this season.",
-      time: "09:12",
-      isMe: false,
-    },
-    {
-      id: "2",
-      sender: "Anita Sharma",
-      initials: "AS",
-      color: "bg-pink-500/15 text-pink-300",
-      content: "Agreed! What organic fertilizer blend are you all using? I switched to vermicompost and seeing great results.",
-      time: "09:18",
-      isMe: false,
-    },
-    {
-      id: "3",
-      sender: "You",
-      initials: "YO",
-      color: "bg-emerald-500/15 text-primary",
-      content: "I use a 3:1 mix of vermicompost and neem cake. Works well for our soil type.",
-      time: "09:24",
-      isMe: true,
-    },
-    {
-      id: "4",
-      sender: "Raj Patel",
-      initials: "RP",
-      color: "bg-amber-500/15 text-amber-300",
-      content: "Just harvested 200kg premium organic wheat from Field 7. Looking for buyers at 32/kg. DM for bulk rates! Quality certified.",
-      time: "09:31",
-      isMe: false,
-      isSaleListing: true,
-    },
-    {
-      id: "5",
-      sender: "Deepak Kumar",
-      initials: "DK",
-      color: "bg-blue-500/15 text-blue-300",
-      content: "Interested in the wheat Raj. Will DM you. Also, has anyone dealt with aphids this late in the season?",
-      time: "09:38",
-      isMe: false,
-    },
-    {
-      id: "6",
-      sender: "Anita Sharma",
-      initials: "AS",
-      color: "bg-pink-500/15 text-pink-300",
-      content: "Neem oil spray works great for aphids. 2ml per litre, spray early morning for best effect.",
-      time: "09:42",
-      isMe: false,
-    },
-  ],
-  "tomato-farmers": [
-    {
-      id: "1",
-      sender: "Priya Singh",
-      initials: "PS",
-      color: "bg-red-500/15 text-red-300",
-      content: "Anyone tried the new blight-resistant tomato variety from IARI?",
-      time: "08:45",
-      isMe: false,
-    },
-    {
-      id: "2",
-      sender: "You",
-      initials: "YO",
-      color: "bg-emerald-500/15 text-primary",
-      content: "Yes, planted 50 saplings last month. So far no signs of blight even with the rains.",
-      time: "08:52",
-      isMe: true,
-    },
-  ],
-  "sustainable-ag": [
-    {
-      id: "1",
-      sender: "Admin",
-      initials: "AD",
-      color: "bg-emerald-500/15 text-emerald-300",
-      content: "New cover cropping guide has been shared in the files section. Check it out!",
-      time: "07:30",
-      isMe: false,
-    },
-  ],
-}
 
 export function CommunityView() {
   const [searchQuery, setSearchQuery] = useState("")
@@ -225,7 +135,39 @@ export function CommunityView() {
   )
 
   const currentGroup = groups.find((g) => g.id === selectedGroup)
-  const currentMessages = messagesData[selectedGroup] || []
+  const [groupMessages, setGroupMessages] = useState<Record<string, Message[]>>({
+    "organic-wheat": [
+      {
+        id: "1",
+        sender: "Ramesh",
+        initials: "RA",
+        color: "bg-blue-500/15 text-blue-300",
+        content: "Did anyone get rain today?",
+        time: "09:12",
+        isMe: false,
+      },
+      {
+        id: "2",
+        sender: "Anita Sharma",
+        initials: "AS",
+        color: "bg-pink-500/15 text-pink-300",
+        content: "Just a light drizzle for about 10 minutes here in Zone 4.",
+        time: "09:18",
+        isMe: false,
+      },
+      {
+        id: "3",
+        sender: "You",
+        initials: "YO",
+        color: "bg-emerald-500/15 text-primary",
+        content: "No rain on my farm unfortunately. Keeping irrigation systems running.",
+        time: "09:24",
+        isMe: true,
+      },
+    ]
+  })
+
+  const currentMessages = groupMessages[selectedGroup] || []
 
   const scrollToBottom = useCallback(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
@@ -233,7 +175,7 @@ export function CommunityView() {
 
   useEffect(() => {
     scrollToBottom()
-  }, [selectedGroup, scrollToBottom])
+  }, [selectedGroup, groupMessages, scrollToBottom])
 
   const handleSelectGroup = (groupId: string) => {
     setSelectedGroup(groupId)
@@ -255,6 +197,22 @@ export function CommunityView() {
 
   const handleSend = () => {
     if (!messageInput.trim()) return
+
+    const newMessage: Message = {
+      id: Date.now().toString(),
+      sender: "You",
+      initials: "YO",
+      color: "bg-emerald-500/15 text-primary",
+      content: messageInput.trim(),
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      isMe: true,
+    }
+
+    setGroupMessages(prev => ({
+      ...prev,
+      [selectedGroup]: [...(prev[selectedGroup] || []), newMessage]
+    }))
+
     setMessageInput("")
   }
 
@@ -297,11 +255,10 @@ export function CommunityView() {
                     <button
                       key={group.id}
                       onClick={() => handleSelectGroup(group.id)}
-                      className={`flex items-start gap-3 w-full p-3 rounded-xl text-left transition-all ${
-                        isSelected
+                      className={`flex items-start gap-3 w-full p-3 rounded-xl text-left transition-all ${isSelected
                           ? "bg-emerald-500/[0.06] border border-emerald-500/10"
                           : "hover:bg-white/[0.03] border border-transparent"
-                      }`}
+                        }`}
                     >
                       <div className={`flex items-center justify-center w-10 h-10 rounded-xl shrink-0 ${group.color}`}>
                         <GroupIcon className="w-5 h-5" />
@@ -398,13 +355,12 @@ export function CommunityView() {
                             <span className="text-[10px] text-muted-foreground/50">{msg.time}</span>
                           </div>
                           <div
-                            className={`rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${
-                              msg.isMe
+                            className={`rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${msg.isMe
                                 ? "bg-primary/20 text-foreground border border-emerald-500/15 rounded-tr-md backdrop-blur-sm"
                                 : msg.isSaleListing
                                   ? "bg-amber-500/[0.06] border border-amber-500/10 text-foreground rounded-tl-md backdrop-blur-sm"
                                   : "bg-white/[0.04] text-foreground/90 border border-white/[0.06] rounded-tl-md backdrop-blur-sm"
-                            }`}
+                              }`}
                           >
                             {msg.isSaleListing && (
                               <div className="flex items-center gap-1.5 mb-1.5">

@@ -50,7 +50,39 @@ function getLogColor(level: string) {
 
 export function DiagnosticsView() {
   const [logs, setLogs] = useState(initialLogs)
+  const [batteryLevel, setBatteryLevel] = useState(78)
+  const [cpuTemp, setCpuTemp] = useState(65)
+  const [latency, setLatency] = useState(14)
   const scrollRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const telemetryInterval = setInterval(() => {
+      setCpuTemp(prev => {
+        // Randomly fluctuate between 45 and 50
+        const min = 45;
+        const max = 50;
+        const fluctuation = (Math.random() < 0.5 ? -1 : 1) * Math.random();
+        let next = prev + fluctuation;
+        if (next < min) next = min + Math.random();
+        if (next > max) next = max - Math.random();
+        return Number(next.toFixed(1));
+      });
+
+      setLatency(() => {
+        // Randomly fluctuate between 12 and 28
+        return Math.floor(Math.random() * (28 - 12 + 1)) + 12;
+      });
+    }, 2000);
+
+    const batteryInterval = setInterval(() => {
+      setBatteryLevel(prev => Math.max(0, prev - 1));
+    }, 60000); // Drop 1% every minute
+
+    return () => {
+      clearInterval(telemetryInterval);
+      clearInterval(batteryInterval);
+    };
+  }, []);
 
   useEffect(() => {
     let idx = 0
@@ -93,15 +125,15 @@ export function DiagnosticsView() {
                 </div>
                 <div>
                   <p className="text-xs text-muted-foreground font-medium">Battery Level</p>
-                  <p className="text-2xl font-bold text-foreground">78%</p>
+                  <p className="text-2xl font-bold text-foreground transition-all duration-500">{batteryLevel}%</p>
                 </div>
               </div>
               <Badge className="bg-emerald-500/10 text-primary border-emerald-500/20 backdrop-blur-sm">Good</Badge>
             </div>
             <div className="h-2 w-full rounded-full bg-white/[0.06] overflow-hidden">
-              <div className="h-full bg-primary rounded-full shadow-[0_0_8px_rgba(16,185,129,0.3)]" style={{ width: "78%" }} />
+              <div className="h-full bg-primary rounded-full shadow-[0_0_8px_rgba(16,185,129,0.3)] transition-all duration-1000 ease-in-out" style={{ width: `${batteryLevel}%` }} />
             </div>
-            <p className="text-xs text-muted-foreground/70 mt-2">Est. 2.4 hours remaining</p>
+            <p className="text-xs text-muted-foreground/70 mt-2">Est. {(batteryLevel / 78 * 2.4).toFixed(1)} hours remaining</p>
           </div>
         </div>
 
@@ -115,13 +147,13 @@ export function DiagnosticsView() {
                 </div>
                 <div>
                   <p className="text-xs text-muted-foreground font-medium">Pi 5 Temp</p>
-                  <p className="text-2xl font-bold text-foreground">65&deg;C</p>
+                  <p className="text-2xl font-bold text-foreground transition-all duration-500">{cpuTemp}&deg;C</p>
                 </div>
               </div>
               <Badge className="bg-amber-500/10 text-[#F59E0B] border-amber-500/20 backdrop-blur-sm">Warning</Badge>
             </div>
             <div className="h-2 w-full rounded-full bg-white/[0.06] overflow-hidden">
-              <div className="h-full bg-[#F59E0B] rounded-full shadow-[0_0_8px_rgba(245,158,11,0.3)]" style={{ width: "72%" }} />
+              <div className="h-full bg-[#F59E0B] rounded-full shadow-[0_0_8px_rgba(245,158,11,0.3)] transition-all duration-1000 ease-in-out" style={{ width: `${(cpuTemp / 80) * 100}%` }} />
             </div>
             <p className="text-xs text-muted-foreground/70 mt-2">Throttle threshold: 80&deg;C</p>
           </div>
@@ -150,7 +182,7 @@ export function DiagnosticsView() {
             </div>
             <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground/70">
               <span className="flex items-center gap-1"><Wifi className="w-3 h-3" /> UART 115200</span>
-              <span className="flex items-center gap-1"><Activity className="w-3 h-3" /> 14ms latency</span>
+              <span className="flex items-center gap-1 transition-all duration-300"><Activity className="w-3 h-3" /> {latency}ms latency</span>
             </div>
           </div>
         </div>
