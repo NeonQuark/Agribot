@@ -13,6 +13,8 @@ import {
   Signal,
   Maximize,
   Minimize,
+  Power,
+  PowerOff,
 } from "lucide-react"
 import { useCallback, useEffect, useState, useRef } from "react"
 import { toast } from "sonner"
@@ -31,6 +33,7 @@ const directionKeys: Record<string, string> = {
 export function TeleOpView() {
   const [activeDirection, setActiveDirection] = useState<string | null>(null)
   const [roverStatus, setRoverStatus] = useState("Idle")
+  const [isCameraOn, setIsCameraOn] = useState(true)
 
   const handleDirectionChange = useCallback((dir: string | null) => {
     setActiveDirection(dir)
@@ -84,10 +87,27 @@ export function TeleOpView() {
         {/* Camera feed */}
         <div className="xl:col-span-2 relative glass-card rounded-2xl overflow-hidden noise">
           <div className="relative p-4 pb-3 flex items-center justify-between">
-            <h3 className="text-sm font-medium text-foreground/90 flex items-center gap-2">
-              <Video className="w-4 h-4 text-primary" />
-              Camera Feed
-            </h3>
+            <div className="flex items-center gap-3">
+              <h3 className="text-sm font-medium text-foreground/90 flex items-center gap-2">
+                <Video className="w-4 h-4 text-primary" />
+                Camera Feed
+              </h3>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setIsCameraOn(!isCameraOn)
+                  toast(`Camera turned ${!isCameraOn ? "ON" : "OFF"}`)
+                }}
+                className={`h-7 px-2.5 text-xs gap-1.5 border hover:bg-white/[0.04] transition-all backdrop-blur-sm ${isCameraOn
+                    ? "bg-red-500/10 text-destructive border-red-500/20 hover:text-red-400"
+                    : "bg-emerald-500/10 text-primary border-emerald-500/20 hover:text-emerald-400"
+                  }`}
+              >
+                {isCameraOn ? <PowerOff className="w-3 h-3" /> : <Power className="w-3 h-3" />}
+                {isCameraOn ? "Turn Off" : "Turn On"}
+              </Button>
+            </div>
             <div className="flex items-center gap-2">
               <Badge className="bg-primary/10 text-primary border-primary/20 backdrop-blur-sm">
                 Rover Status: {roverStatus}
@@ -108,19 +128,28 @@ export function TeleOpView() {
           <div className="px-4 pb-4">
             <div className="relative aspect-video bg-black/40 rounded-xl overflow-hidden flex items-center justify-center border border-white/[0.04]">
               {/* Camera Video Feed */}
-              <video
-                autoPlay
-                loop
-                muted
-                playsInline
-                className="absolute inset-0 w-full h-full object-cover opacity-80"
-                src="https://www.w3schools.com/html/mov_bbb.mp4"
-              />
-              {/* Grid overlay */}
-              <div className="absolute inset-0 opacity-[0.06]" style={{
-                backgroundImage: `linear-gradient(rgba(16,185,129,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(16,185,129,0.5) 1px, transparent 1px)`,
-                backgroundSize: "40px 40px",
-              }} />
+              {isCameraOn ? (
+                <>
+                  <video
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    className="absolute inset-0 w-full h-full object-cover opacity-80"
+                    src="https://www.w3schools.com/html/mov_bbb.mp4"
+                  />
+                  {/* Grid overlay */}
+                  <div className="absolute inset-0 opacity-[0.06]" style={{
+                    backgroundImage: `linear-gradient(rgba(16,185,129,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(16,185,129,0.5) 1px, transparent 1px)`,
+                    backgroundSize: "40px 40px",
+                  }} />
+                </>
+              ) : (
+                <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/90 text-muted-foreground">
+                  <Video className="w-12 h-12 mb-4 opacity-20" />
+                  <p className="text-sm font-mono tracking-widest uppercase opacity-50">Camera Offline</p>
+                </div>
+              )}
               {/* Crosshair */}
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                 <div className="w-12 h-12 border border-primary/30 rounded-full" />
