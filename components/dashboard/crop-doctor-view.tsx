@@ -13,6 +13,10 @@ import {
   CheckCircle2,
   Camera,
   X,
+  Droplets,
+  ThermometerSun,
+  Sprout,
+  Activity
 } from "lucide-react"
 import { useState, useCallback, useRef } from "react"
 
@@ -31,8 +35,22 @@ export function CropDoctorView() {
   const [isDragging, setIsDragging] = useState(false)
   const [uploadedFile, setUploadedFile] = useState<File | null>(null)
   const [isLoading, setIsLoading] = useState(false)
+  const [isSoilLoading, setIsSoilLoading] = useState(false)
   const [analysisResult, setAnalysisResult] = useState<{ disease: string; confidence: string } | null>(null)
+  const [soilHealth, setSoilHealth] = useState<{ ph: string; crops: string; climate: string } | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
+
+  const generateMockSoilData = async () => {
+    setIsSoilLoading(true)
+    // Simulate API delay
+    await new Promise(resolve => setTimeout(resolve, 1500))
+    setSoilHealth({
+      ph: "6.8 (Slightly Acidic)",
+      crops: "Wheat, Soybeans, Potatoes",
+      climate: "Temp: 24°C | Rainfall: 45mm"
+    })
+    setIsSoilLoading(false)
+  }
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault()
@@ -247,6 +265,62 @@ export function CropDoctorView() {
           </div>
         </div>
       )}
+
+      {/* Soil Health Section */}
+      <div className="relative glass-card rounded-2xl overflow-hidden noise">
+        <div className="relative p-4 pb-3 flex items-center justify-between">
+          <h3 className="text-sm font-medium text-foreground/90 flex items-center gap-2">
+            <Activity className="w-4 h-4 text-primary" />
+            Soil Health Metrics
+          </h3>
+        </div>
+        <div className="relative px-4 pb-4">
+          {!soilHealth && !isSoilLoading && (
+            <Button
+              onClick={generateMockSoilData}
+              className="w-full bg-emerald-500/10 text-primary border border-emerald-500/15 hover:bg-emerald-500/15 gap-2 rounded-xl backdrop-blur-sm" variant="outline"
+            >
+              <Activity className="w-4 h-4" />
+              Run Soil Analysis
+            </Button>
+          )}
+
+          {isSoilLoading && (
+            <div className="flex flex-col items-center justify-center py-8">
+              <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4" />
+              <p className="text-sm font-medium text-foreground">Analyzing soil composition...</p>
+            </div>
+          )}
+
+          {soilHealth && !isSoilLoading && (
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="p-4 rounded-xl bg-blue-500/[0.06] border border-blue-500/10 backdrop-blur-sm">
+                <div className="flex items-center gap-2 mb-2">
+                  <Droplets className="w-4 h-4 text-blue-500" />
+                  <span className="text-xs font-medium text-blue-500 uppercase tracking-wider">pH Level</span>
+                </div>
+                <p className="text-xl font-bold text-foreground">{soilHealth.ph}</p>
+              </div>
+
+              <div className="p-4 rounded-xl bg-emerald-500/[0.06] border border-emerald-500/10 backdrop-blur-sm">
+                <div className="flex items-center gap-2 mb-2">
+                  <Sprout className="w-4 h-4 text-primary" />
+                  <span className="text-xs font-medium text-primary uppercase tracking-wider">Suggested Crops</span>
+                </div>
+                <p className="text-lg font-bold text-foreground truncate">{soilHealth.crops}</p>
+              </div>
+
+              <div className="p-4 rounded-xl bg-amber-500/[0.06] border border-amber-500/10 backdrop-blur-sm">
+                <div className="flex items-center gap-2 mb-2">
+                  <ThermometerSun className="w-4 h-4 text-[#F59E0B]" />
+                  <span className="text-xs font-medium text-[#F59E0B] uppercase tracking-wider">Climate</span>
+                </div>
+                <p className="text-lg font-bold text-foreground truncate">{soilHealth.climate}</p>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
 
       {/* Recent Scans */}
       <div className="relative glass-card rounded-2xl overflow-hidden noise">
