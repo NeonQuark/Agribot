@@ -162,13 +162,20 @@ export function TeleOpView() {
               {/* Camera Video Feed */}
               {isCameraOn ? (
                 <>
-                  <video
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
+                  <style>
+                    {`
+                      @keyframes pan-camera {
+                        0% { transform: scale(1.1) translate(0, 0); }
+                        50% { transform: scale(1.1) translate(-2%, 2%); }
+                        100% { transform: scale(1.1) translate(2%, -1%); }
+                      }
+                    `}
+                  </style>
+                  <img
                     className="absolute inset-0 w-full h-full object-cover opacity-80"
-                    src="https://www.w3schools.com/html/mov_bbb.mp4"
+                    src="https://images.unsplash.com/photo-1592982537447-6f2a6a0a091c?auto=format&fit=crop&q=80&w=2000"
+                    alt="Simulated Drone Feed"
+                    style={{ animation: "pan-camera 20s ease-in-out infinite alternate" }}
                   />
                   {/* Grid overlay */}
                   <div className="absolute inset-0 opacity-[0.06]" style={{
